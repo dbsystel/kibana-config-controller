@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: dockerregistry/kibana-controller
+  tag: 1.0.0
+
+url: http://localhost:5601
+id: "0"
+logLevel: "info"
+logFormat: "json"

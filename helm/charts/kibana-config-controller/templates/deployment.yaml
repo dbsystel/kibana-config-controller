@@ -1,0 +1,35 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "kibana-config-controller.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "kibana-config-controller.name" . }}
+    helm.sh/chart: {{ include "kibana-config-controller.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "kibana-config-controller.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "kibana-config-controller.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "kibana-config-controller.name" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          args:
+            - "--kibana-url={{ .Values.url }}"
+            - "--id={{ .Values.id }}"
+            - "--log-level={{ .Values.logLevel }}"
+            - "--log-format={{ .Values.logFormat }}"
