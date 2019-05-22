@@ -12,8 +12,14 @@ setup:
 .PHONY: setup
 
 # Run all the tests
-test:
+# Note -race does not work on git-bash in windows
+test-win:
 	go test $(TEST_OPTIONS) -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=2m
+.PHONY: test-win
+
+# Run all the tests
+test:
+	go test $(TEST_OPTIONS) -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=2m
 .PHONY: test
 
 # Run all the tests and opens the coverage report
@@ -35,9 +41,9 @@ lint:
 ci: build test lint
 .PHONY: ci
 
-# Build a beta version of goreleaser
+# Build the controller
 build:
-	go build -o $(BUILD_NAME)
+	go build -v -i -o $(BUILD_NAME) ./cmd
 .PHONY: build
 
 # Show to-do items per file.
