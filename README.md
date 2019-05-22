@@ -47,3 +47,5 @@ To build a docker image out of it, look at provided [Dockerfile](Dockerfile) exa
 ## Deployment
 Our preferred way to install kibana-config-controller is [Helm](https://helm.sh/). See example installation at our [Helm directory](helm) within this repo.
 
+## Scripts
+If you want to export kibana saved-objects into json files you can use the provided [scripts](scripts) within this repo.

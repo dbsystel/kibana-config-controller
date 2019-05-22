@@ -14,7 +14,6 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
-
 type APIClient struct {
 	BaseUrl    *url.URL
 	HTTPClient *http.Client
@@ -24,15 +23,17 @@ type APIClient struct {
 
 type KibanaFindResp struct {
 	Total int `json:"total"`
-	Data []struct{ Id string `json:"id"`} `json:"data"`
+	Data  []struct {
+		Id string `json:"id"`
+	} `json:"data"`
 }
 
 func (c *APIClient) CreateObject(objType, objId string, dataJSON io.Reader) error {
-	return c.doPost(makeUrl(c.BaseUrl, "api/saved_objects/" + objType + "/" + objId), dataJSON)
+	return c.doPost(makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId), dataJSON)
 }
 
 func (c *APIClient) UpdateObject(objType, objId string, dataJSON io.Reader) error {
-	url := makeUrl(c.BaseUrl, "api/saved_objects/" + objType + "/" + objId)
+	url := makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId)
 	req, err := http.NewRequest("PUT", url, dataJSON)
 	if err != nil {
 		return err
@@ -44,7 +45,7 @@ func (c *APIClient) UpdateObject(objType, objId string, dataJSON io.Reader) erro
 }
 
 func (c *APIClient) DeleteObject(objType, objId string) error {
-	url := makeUrl(c.BaseUrl, "api/saved_objects/" + objType + "/" + objId)
+	url := makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
@@ -88,11 +89,10 @@ func (c *APIClient) doRequest(req *http.Request) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf(
-			        "Unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
-			               resp.StatusCode,
-			               string(response),
-
-			               )
+			"Unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
+			resp.StatusCode,
+			string(response),
+		)
 	}
 	return nil
 }
@@ -118,5 +118,3 @@ func makeUrl(baseURL *url.URL, endpoint string) string {
 
 	return result.String()
 }
-
-

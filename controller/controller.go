@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dbsystel/kibana-config-controller/kibana"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/dbsystel/kibana-config-controller/kibana"
 	"k8s.io/api/core/v1"
 )
 
 type Controller struct {
-	logger            log.Logger
-	k                 kibana.APIClient
+	logger log.Logger
+	k      kibana.APIClient
 }
 
 func (c *Controller) Create(obj interface{}) {
@@ -34,10 +34,10 @@ func (c *Controller) Create(obj interface{}) {
 			}
 
 			level.Info(c.logger).Log(
-				"msg", "Creating " + objType + ": " + k,
+				"msg", "Creating "+objType+": "+k,
 				"configmap", configmapObj.Name,
 				"namespace", configmapObj.Namespace,
-				)
+			)
 
 			objId := c.searchIdFromJson(strings.NewReader(v))
 			if objId == "" {
@@ -51,21 +51,21 @@ func (c *Controller) Create(obj interface{}) {
 
 			if err != nil {
 				level.Info(c.logger).Log(
-					"msg", "Failed to create: " + k,
+					"msg", "Failed to create: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
-					)
+				)
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
 				level.Info(c.logger).Log(
-					"msg", "Succeeded: Created: " + k,
+					"msg", "Succeeded: Created: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
-					)
+				)
 			}
 		}
 	} else {
-		level.Debug(c.logger).Log("msg", "Skipping configmap: " + configmapObj.Name)
+		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
 
@@ -78,7 +78,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
 	if noDifference(oldobj.(*v1.ConfigMap), configmapObj) {
-		level.Debug(c.logger).Log("msg", "Skipping automatically updated configmap:" + configmapObj.Name)
+		level.Debug(c.logger).Log("msg", "Skipping automatically updated configmap:"+configmapObj.Name)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 				continue
 			}
 			level.Info(c.logger).Log(
-				"msg", "Updating " + objType + ": " + k,
+				"msg", "Updating "+objType+": "+k,
 				"configmap", configmapObj.Name,
 				"namespace", configmapObj.Namespace,
 			)
@@ -108,21 +108,21 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 
 			if err != nil {
 				level.Info(c.logger).Log(
-					"msg", "Failed to update: " + k,
+					"msg", "Failed to update: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
 				level.Info(c.logger).Log(
-					"msg", "Succeeded: Updated: " + k,
+					"msg", "Succeeded: Updated: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
 			}
 		}
 	} else {
-		level.Debug(c.logger).Log("msg", "Skipping configmap: " + configmapObj.Name)
+		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
 func (c *Controller) Delete(obj interface{}) {
@@ -142,7 +142,7 @@ func (c *Controller) Delete(obj interface{}) {
 				continue
 			}
 			level.Info(c.logger).Log(
-				"msg", "Deleting " + objType + ": " + k,
+				"msg", "Deleting "+objType+": "+k,
 				"configmap", configmapObj.Name,
 				"namespace", configmapObj.Namespace,
 			)
@@ -157,21 +157,21 @@ func (c *Controller) Delete(obj interface{}) {
 
 			if err != nil {
 				level.Info(c.logger).Log(
-					"msg", "Failed to delete: " + k,
+					"msg", "Failed to delete: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
 				level.Info(c.logger).Log(
-					"msg", "Succeeded: Deleted: " + k,
+					"msg", "Succeeded: Deleted: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
 			}
 		}
 	} else {
-		level.Debug(c.logger).Log("msg", "Skipping configmap: " + configmapObj.Name)
+		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
 
@@ -227,11 +227,11 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 		delete(newObj, "source")
 	}
 
-    jsonString, err := json.Marshal(newObj)
-    if err != nil {
-    	level.Error(c.logger).Log("err", err.Error())
+	jsonString, err := json.Marshal(newObj)
+	if err != nil {
+		level.Error(c.logger).Log("err", err.Error())
 	}
-    return string(jsonString)
+	return string(jsonString)
 }
 
 // create new Controller instance
@@ -248,7 +248,7 @@ func noDifference(newConfigMap *v1.ConfigMap, oldConfigMap *v1.ConfigMap) bool {
 		return false
 	}
 	for k, v := range newConfigMap.Data {
-		if v != oldConfigMap.Data[k]{
+		if v != oldConfigMap.Data[k] {
 			return false
 		}
 	}

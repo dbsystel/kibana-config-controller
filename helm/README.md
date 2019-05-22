@@ -26,7 +26,7 @@ Parameter | Description | Default
 --------- | ----------- | -------
 `replicaCount` | The number of pod replicas | `1`
 `image.repository` | kibana-config-controller container image repository | `dockerregistry/kibana-config-controller`
-`image.tag` | kibana-config-controller container image tag | `1.0.0`
+`image.tag` | kibana-config-controller container image tag | `1.1.0`
 `url` | The url to access kibana | `http://localhost:5601`
 `id` | The id to specify kibana | `0`
 `logLevel` | The log-level of kibana-config-controller | `info`
