@@ -8,7 +8,7 @@ import (
 	"github.com/dbsystel/kibana-config-controller/kibana"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 type Controller struct {
