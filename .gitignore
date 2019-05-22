@@ -2,3 +2,4 @@
 .vscode/*
 bin/*
 scripts/saved_objects/*
+coverage.txt
