@@ -8,6 +8,7 @@ require (
 	github.com/dbsystel/kube-controller-dbsystel-go-common v0.0.0-20190307121541-2d8f1275b8b2
 	github.com/go-kit/kit v0.8.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
