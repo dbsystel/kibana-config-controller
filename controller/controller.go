@@ -18,8 +18,8 @@ type Controller struct {
 
 func (c *Controller) Create(obj interface{}) {
 	configmapObj := obj.(*v1.ConfigMap)
-	id, _ := configmapObj.Annotations["kibana.net/id"]
-	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
+	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
+	kobj := configmapObj.Annotations["kibana.net/savedobject"] // TODO add error check
 
 	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
@@ -71,8 +71,8 @@ func (c *Controller) Create(obj interface{}) {
 
 func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	configmapObj := newobj.(*v1.ConfigMap)
-	id, _ := configmapObj.Annotations["kibana.net/id"]
-	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
+	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
+	kobj := configmapObj.Annotations["kibana.net/savedobject"] // TODO add error check
 
 	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
@@ -127,8 +127,8 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 }
 func (c *Controller) Delete(obj interface{}) {
 	configmapObj := obj.(*v1.ConfigMap)
-	id, _ := configmapObj.Annotations["kibana.net/id"]
-	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
+	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
+	kobj := configmapObj.Annotations["kibana.net/savedobject"] // TODO add error check
 
 	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
