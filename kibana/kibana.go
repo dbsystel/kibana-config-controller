@@ -14,6 +14,7 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
+// APIClient wrapper for the api client to kibana
 type APIClient struct {
 	BaseURL    *url.URL
 	HTTPClient *http.Client
@@ -21,6 +22,7 @@ type APIClient struct {
 	logger     log.Logger
 }
 
+// FindResp the kibana API response
 type FindResp struct {
 	Total int `json:"total"`
 	Data  []struct {
@@ -28,10 +30,12 @@ type FindResp struct {
 	} `json:"data"`
 }
 
+// CreateObject creates the given object
 func (c *APIClient) CreateObject(objType, objID string, dataJSON io.Reader) error {
 	return c.doPost(makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID), dataJSON)
 }
 
+// UpdateObject updates the given object
 func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) error {
 	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("PUT", url, dataJSON)
@@ -44,6 +48,7 @@ func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) erro
 	return c.doRequest(req)
 }
 
+// DeleteObject deletes the object with the given ID
 func (c *APIClient) DeleteObject(objType, objID string) error {
 	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("DELETE", url, nil)
@@ -99,11 +104,13 @@ func (c *APIClient) doRequest(req *http.Request) error {
 	return nil
 }
 
+// Clientset TODO: needed?
 type Clientset struct {
 	BaseURL    *url.URL
 	HTTPClient *http.Client
 }
 
+// New creates a kibana api client
 func New(baseURL *url.URL, id int, logger log.Logger) *APIClient {
 	return &APIClient{
 		BaseURL:    baseURL,

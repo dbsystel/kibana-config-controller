@@ -11,11 +11,13 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
+// Controller wrapper for kibana
 type Controller struct {
 	logger log.Logger
 	k      kibana.APIClient
 }
 
+// Create creates the given configMap
 func (c *Controller) Create(obj interface{}) {
 	configmapObj := obj.(*v1.ConfigMap)
 	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
@@ -76,6 +78,7 @@ func (c *Controller) Create(obj interface{}) {
 	}
 }
 
+// Update updates the given configMap
 func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	configmapObj := newobj.(*v1.ConfigMap)
 	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
@@ -140,6 +143,8 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
+
+// Delete deletes the given configMap
 func (c *Controller) Delete(obj interface{}) {
 	configmapObj := obj.(*v1.ConfigMap)
 	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
@@ -197,6 +202,7 @@ func (c *Controller) Delete(obj interface{}) {
 	}
 }
 
+// searchTypeFromJSON extracts the 'id' propery from the given object
 func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
@@ -213,6 +219,7 @@ func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
 	return ""
 }
 
+// searchTypeFromJSON extracts the 'type' propery from the given object
 func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
@@ -229,7 +236,7 @@ func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
 	return ""
 }
 
-// delete the fields which are not allowed for kibana api in json body
+// deleteNotAllowedFields deletes the fields which are not allowed for kibana api in json body
 func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
@@ -260,7 +267,7 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 	return string(jsonString)
 }
 
-// create new Controller instance
+// New creates new Controller instance
 func New(k kibana.APIClient, logger log.Logger) *Controller {
 	controller := &Controller{}
 	controller.logger = logger
@@ -268,7 +275,7 @@ func New(k kibana.APIClient, logger log.Logger) *Controller {
 	return controller
 }
 
-// are two configmaps same
+// noDifference checks if two configmaps are equals
 func noDifference(newConfigMap *v1.ConfigMap, oldConfigMap *v1.ConfigMap) bool {
 	if len(newConfigMap.Data) != len(oldConfigMap.Data) {
 		return false
