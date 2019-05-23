@@ -21,7 +21,7 @@ type APIClient struct {
 	logger     log.Logger
 }
 
-type KibanaFindResp struct {
+type FindResp struct {
 	Total int `json:"total"`
 	Data  []struct {
 		ID string `json:"id"`
