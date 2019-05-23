@@ -29,10 +29,12 @@ func (c *Controller) Create(obj interface{}) {
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be created.")
 				continue
 			}
 
+			//nolint:errcheck
 			level.Info(c.logger).Log(
 				"msg", "Creating "+objType+": "+k,
 				"configmap", configmapObj.Name,
@@ -41,6 +43,7 @@ func (c *Controller) Create(obj interface{}) {
 
 			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be created.")
 				continue
 			}
@@ -50,13 +53,16 @@ func (c *Controller) Create(obj interface{}) {
 			err = c.k.CreateObject(objType, objID, strings.NewReader(v))
 
 			if err != nil {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Failed to create: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
+				//nolint:errcheck
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Succeeded: Created: "+k,
 					"configmap", configmapObj.Name,
@@ -65,6 +71,7 @@ func (c *Controller) Create(obj interface{}) {
 			}
 		}
 	} else {
+		//nolint:errcheck
 		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
@@ -78,6 +85,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
 	if noDifference(oldobj.(*v1.ConfigMap), configmapObj) {
+		//nolint:errcheck
 		level.Debug(c.logger).Log("msg", "Skipping automatically updated configmap:"+configmapObj.Name)
 		return
 	}
@@ -87,9 +95,11 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be updated.")
 				continue
 			}
+			//nolint:errcheck
 			level.Info(c.logger).Log(
 				"msg", "Updating "+objType+": "+k,
 				"configmap", configmapObj.Name,
@@ -98,6 +108,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 
 			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be updated.")
 				continue
 			}
@@ -107,13 +118,16 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 			err = c.k.UpdateObject(objType, objID, strings.NewReader(v))
 
 			if err != nil {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Failed to update: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
+				//nolint:errcheck
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Succeeded: Updated: "+k,
 					"configmap", configmapObj.Name,
@@ -122,6 +136,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 			}
 		}
 	} else {
+		//nolint:errcheck
 		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
@@ -138,9 +153,11 @@ func (c *Controller) Delete(obj interface{}) {
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be deleted.")
 				continue
 			}
+			//nolint:errcheck
 			level.Info(c.logger).Log(
 				"msg", "Deleting "+objType+": "+k,
 				"configmap", configmapObj.Name,
@@ -149,6 +166,7 @@ func (c *Controller) Delete(obj interface{}) {
 
 			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
+				//nolint:errcheck
 				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be deleted.")
 				continue
 			}
@@ -156,13 +174,16 @@ func (c *Controller) Delete(obj interface{}) {
 			err = c.k.DeleteObject(objType, objID)
 
 			if err != nil {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Failed to delete: "+k,
 					"configmap", configmapObj.Name,
 					"namespace", configmapObj.Namespace,
 				)
+				//nolint:errcheck
 				level.Error(c.logger).Log("err", err.Error())
 			} else {
+				//nolint:errcheck
 				level.Info(c.logger).Log(
 					"msg", "Succeeded: Deleted: "+k,
 					"configmap", configmapObj.Name,
@@ -171,6 +192,7 @@ func (c *Controller) Delete(obj interface{}) {
 			}
 		}
 	} else {
+		//nolint:errcheck
 		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
 }
@@ -179,6 +201,7 @@ func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(c.logger).Log("err", err.Error())
 	}
 
@@ -194,6 +217,7 @@ func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(c.logger).Log("err", err.Error())
 	}
 
@@ -210,6 +234,7 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(c.logger).Log("err", err.Error())
 	}
 
@@ -229,6 +254,7 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 
 	jsonString, err := json.Marshal(newObj)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(c.logger).Log("err", err.Error())
 	}
 	return string(jsonString)

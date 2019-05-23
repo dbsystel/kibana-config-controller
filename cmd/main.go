@@ -52,16 +52,19 @@ func main() {
 		os.Exit(2)
 	}
 	//First usage of initialized logger for testing
+	// nolint:errcheck
 	level.Debug(logger).Log("msg", "Logging initiated...")
 	//Initialize new k8s client from common k8s package
 	k8sClient, err := kubernetes.NewClientSet(runOutsideCluster)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(logger).Log("msg", err.Error())
 		os.Exit(2)
 	}
 
 	uRL, err := url.Parse(*kibanaURL)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaURL)
 		os.Exit(2)
 	}
@@ -84,6 +87,7 @@ func main() {
 
 	<-sigs // Wait for signals (this hangs until a signal arrives)
 
+	//nolint:errcheck
 	level.Info(logger).Log("msg", "Shutting down...")
 
 	close(stop) // Tell goroutines to stop themselves

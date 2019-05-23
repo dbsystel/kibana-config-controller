@@ -71,7 +71,9 @@ func (c *APIClient) doRequest(req *http.Request) error {
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		for strings.Contains(err.Error(), "connection refused") {
+			//nolint:errcheck
 			level.Error(c.logger).Log("err", err.Error())
+			//nolint:errcheck
 			level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry again...")
 			time.Sleep(8 * time.Second)
 			resp, err = c.HTTPClient.Do(req)
