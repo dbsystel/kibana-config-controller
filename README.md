@@ -1,3 +1,10 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Travis Build Status](https://travis-ci.org/dbsystel/kibana-config-controller/.svg?branch=master)](https://travis-ci.org/dbsystel/kibana-config-controller/)
+[![codecov](https://codecov.io/gh/dbsystel/kibana-config-controller//branch/master/graph/badge.svg)](https://codecov.io/gh/dbsystel/kibana-config-controller/)
+[![golangci](https://golangci.com/badges/github.com/dbsystel/kibana-config-controller/.svg)](https://golangci.com/r/github.com/dbsystel/kibana-config-controller/)
+[![GoDoc](https://godoc.org/github.com/dbsystel/kibana-config-controller/?status.svg)](http://godoc.org/github.com/dbsystel/kibana-config-controller/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dbsystel/kibana-config-controller/)](https://goreportcard.com/report/github.com/dbsystel/kibana-config-controller/)
+
 # Config Controller for Kibana
 This Controller is based on the [Grafana Operator](https://github.com/tsloughter/grafana-operator). The Config Controller should be run within [Kubernetes](https://github.com/kubernetes/kubernetes) as a sidecar with [Kibana](https://github.com/elastic/kibana).
 
