@@ -23,7 +23,7 @@ import (
 var (
 	app = kingpin.New(filepath.Base(os.Args[0]), "Kibana Controller")
 	//Here you can define more flags for your application
-	kibanaUrl = app.Flag("kibana-url", "The url to issue requests to update dashboards to.").Required().String()
+	kibanaURL = app.Flag("kibana-url", "The url to issue requests to update dashboards to.").Required().String()
 	id        = app.Flag("id", "The kibana id to issue requests to update dashboards to.").Default("0").Int()
 )
 
@@ -60,13 +60,13 @@ func main() {
 		os.Exit(2)
 	}
 
-	kUrl, err := url.Parse(*kibanaUrl)
+	kURL, err := url.Parse(*kibanaURL)
 	if err != nil {
-		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaUrl)
+		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaURL)
 		os.Exit(2)
 	}
 
-	k := kibana.New(kUrl, *id, logger)
+	k := kibana.New(kURL, *id, logger)
 
 	sigs := make(chan os.Signal, 1) // Create channel to receive OS signals
 	stop := make(chan struct{})     // Create channel to receive stop signal

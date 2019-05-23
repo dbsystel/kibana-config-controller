@@ -21,10 +21,10 @@ func (c *Controller) Create(obj interface{}) {
 	id, _ := configmapObj.Annotations["kibana.net/id"]
 	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
 
-	kibanaId, _ := strconv.Atoi(id)
+	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
-	if kibanaId == c.k.Id && isKibanaObject {
+	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJson(strings.NewReader(v))
@@ -39,15 +39,15 @@ func (c *Controller) Create(obj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objId := c.searchIdFromJson(strings.NewReader(v))
-			if objId == "" {
+			objID := c.searchIDFromJson(strings.NewReader(v))
+			if objID == "" {
 				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be created.")
 				continue
 			}
 
 			v = c.deleteNotAllowedFields(strings.NewReader(v))
 
-			err = c.k.CreateObject(objType, objId, strings.NewReader(v))
+			err = c.k.CreateObject(objType, objID, strings.NewReader(v))
 
 			if err != nil {
 				level.Info(c.logger).Log(
@@ -74,7 +74,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	id, _ := configmapObj.Annotations["kibana.net/id"]
 	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
 
-	kibanaId, _ := strconv.Atoi(id)
+	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
 	if noDifference(oldobj.(*v1.ConfigMap), configmapObj) {
@@ -82,7 +82,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 		return
 	}
 
-	if kibanaId == c.k.Id && isKibanaObject {
+	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJson(strings.NewReader(v))
@@ -96,15 +96,15 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objId := c.searchIdFromJson(strings.NewReader(v))
-			if objId == "" {
+			objID := c.searchIDFromJson(strings.NewReader(v))
+			if objID == "" {
 				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be updated.")
 				continue
 			}
 
 			v = c.deleteNotAllowedFields(strings.NewReader(v))
 
-			err = c.k.UpdateObject(objType, objId, strings.NewReader(v))
+			err = c.k.UpdateObject(objType, objID, strings.NewReader(v))
 
 			if err != nil {
 				level.Info(c.logger).Log(
@@ -130,10 +130,10 @@ func (c *Controller) Delete(obj interface{}) {
 	id, _ := configmapObj.Annotations["kibana.net/id"]
 	kobj, _ := configmapObj.Annotations["kibana.net/savedobject"]
 
-	kibanaId, _ := strconv.Atoi(id)
+	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
-	if kibanaId == c.k.Id && isKibanaObject {
+	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJson(strings.NewReader(v))
@@ -147,13 +147,13 @@ func (c *Controller) Delete(obj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objId := c.searchIdFromJson(strings.NewReader(v))
-			if objId == "" {
+			objID := c.searchIDFromJson(strings.NewReader(v))
+			if objID == "" {
 				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be deleted.")
 				continue
 			}
 
-			err = c.k.DeleteObject(objType, objId)
+			err = c.k.DeleteObject(objType, objID)
 
 			if err != nil {
 				level.Info(c.logger).Log(
@@ -175,7 +175,7 @@ func (c *Controller) Delete(obj interface{}) {
 	}
 }
 
-func (c *Controller) searchIdFromJson(objJSON *strings.Reader) string {
+func (c *Controller) searchIDFromJson(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
