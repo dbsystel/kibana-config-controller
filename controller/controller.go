@@ -27,9 +27,9 @@ func (c *Controller) Create(obj interface{}) {
 	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
-			objType := c.searchTypeFromJson(strings.NewReader(v))
+			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
-				level.Info(c.logger).Log("msg", "type not found in Json body. Can not be created.")
+				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be created.")
 				continue
 			}
 
@@ -39,9 +39,9 @@ func (c *Controller) Create(obj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objID := c.searchIDFromJson(strings.NewReader(v))
+			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
-				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be created.")
+				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be created.")
 				continue
 			}
 
@@ -85,9 +85,9 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
-			objType := c.searchTypeFromJson(strings.NewReader(v))
+			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
-				level.Info(c.logger).Log("msg", "type not found in Json body. Can not be updated.")
+				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be updated.")
 				continue
 			}
 			level.Info(c.logger).Log(
@@ -96,9 +96,9 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objID := c.searchIDFromJson(strings.NewReader(v))
+			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
-				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be updated.")
+				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be updated.")
 				continue
 			}
 
@@ -136,9 +136,9 @@ func (c *Controller) Delete(obj interface{}) {
 	if kibanaID == c.k.ID && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
-			objType := c.searchTypeFromJson(strings.NewReader(v))
+			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
-				level.Info(c.logger).Log("msg", "type not found in Json body. Can not be deleted.")
+				level.Info(c.logger).Log("msg", "type not found in JSON body. Can not be deleted.")
 				continue
 			}
 			level.Info(c.logger).Log(
@@ -147,9 +147,9 @@ func (c *Controller) Delete(obj interface{}) {
 				"namespace", configmapObj.Namespace,
 			)
 
-			objID := c.searchIDFromJson(strings.NewReader(v))
+			objID := c.searchIDFromJSON(strings.NewReader(v))
 			if objID == "" {
-				level.Info(c.logger).Log("msg", "id not found in Json body. Can not be deleted.")
+				level.Info(c.logger).Log("msg", "id not found in JSON body. Can not be deleted.")
 				continue
 			}
 
@@ -175,7 +175,7 @@ func (c *Controller) Delete(obj interface{}) {
 	}
 }
 
-func (c *Controller) searchIDFromJson(objJSON *strings.Reader) string {
+func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
@@ -190,7 +190,7 @@ func (c *Controller) searchIDFromJson(objJSON *strings.Reader) string {
 	return ""
 }
 
-func (c *Controller) searchTypeFromJson(objJSON *strings.Reader) string {
+func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
