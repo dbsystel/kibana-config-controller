@@ -60,13 +60,13 @@ func main() {
 		os.Exit(2)
 	}
 
-	kURL, err := url.Parse(*kibanaURL)
+	uRL, err := url.Parse(*kibanaURL)
 	if err != nil {
 		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaURL)
 		os.Exit(2)
 	}
 
-	k := kibana.New(kURL, *id, logger)
+	k := kibana.New(uRL, *id, logger)
 
 	sigs := make(chan os.Signal, 1) // Create channel to receive OS signals
 	stop := make(chan struct{})     // Create channel to receive stop signal
