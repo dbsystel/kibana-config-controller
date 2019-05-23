@@ -89,7 +89,7 @@ func (c *APIClient) doRequest(req *http.Request) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf(
-			"Unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
+			"unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
 			resp.StatusCode,
 			string(response),
 		)
