@@ -3,3 +3,4 @@
 bin/*
 scripts/saved_objects/*
 coverage.txt
+kibana-config-controller

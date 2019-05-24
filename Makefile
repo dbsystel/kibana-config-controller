@@ -8,14 +8,9 @@ export GO111MODULE := on
 
 # Install all the build and lint dependencies
 setup:
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh
 	go mod download
 .PHONY: setup
-
-# Run all the tests
-# Note -race does not work on git-bash in windows
-test-win:
-	go test $(TEST_OPTIONS) -failfast -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=2m
-.PHONY: test-win
 
 # Run all the tests
 test:
@@ -34,7 +29,7 @@ fmt:
 
 # Run all the linters
 lint:
-	golangci-lint run --tests=false --enable-all --disable=gochecknoglobals,dupl,interfacer ./...
+	./bin/golangci-lint run --tests=false --enable-all --disable=gochecknoglobals,dupl,interfacer ./...
 .PHONY: lint
 
 # Run all the tests and code checks
