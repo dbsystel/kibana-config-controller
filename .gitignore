@@ -2,6 +2,7 @@
 .vscode/*
 bin/*
 dist/*
+vendor/*
 scripts/saved_objects/*
 coverage.txt
 kibana-config-controller
