@@ -10,6 +10,7 @@ require (
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
+	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
@@ -26,8 +27,8 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	k8s.io/api v0.0.0-20190313235455-40a48860b5ab
-	k8s.io/apimachinery v0.0.0-20190313205120-d7deff9243b1
-	k8s.io/client-go v11.0.0+incompatible
+	k8s.io/apimachinery v0.0.0-20190313205120-d7deff9243b1 // indirect
+	k8s.io/client-go v11.0.0+incompatible // indirect
 	k8s.io/utils v0.0.0-20190506122338-8fab8cb257d5 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
