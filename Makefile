@@ -38,7 +38,7 @@ ci: build test lint
 
 # Build the controller
 build:
-	go build -v -i -o $(BUILD_NAME) ./cmd
+	go build -v -i -o ./bin/$(BUILD_NAME) ./cmd
 .PHONY: build
 
 # Show to-do items per file.
