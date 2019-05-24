@@ -4,8 +4,11 @@ sudo: required
 language: go
 go: '1.12.x'
 
+env:
+  - GOPATH=${TRAVIS_BUILD_DIR}/vendor/go
+
 services:
-- docker
+  - docker
 
 install:
   - make setup
