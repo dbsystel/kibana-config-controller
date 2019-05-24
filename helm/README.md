@@ -16,10 +16,10 @@ This chart bootstraps a kibana deployment on a [Kubernetes](http://kubernetes.io
 
 ## Installing the Chart
 
-To install the chart with the release name `kibana`:
+To install the chart with the release name `kibana` in namespace `logging`:
 
 ```console
-$ helm install charts/kibana --name kibana
+$ helm upgrade kibana charts/kibana --namespace logging --install
 ```
 
 The command deploys kibana on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -110,14 +110,14 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 * Files not mentioned under this variable will remain unaffected.
 
 ```console
-$ helm install charts/kibana --name kibana \
+$ helm upgrade kibana charts/kibana --namespace logging --install \
   --set=image.tag=v0.0.2,resources.limits.cpu=200m
 ```
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example :
 
 ```console
-$ helm install charts/kibana --name kibana -f values.yaml
+$ helm upgrade kibana charts/kibana --namespace logging --install -f values.yaml
 ```
 
 > **Tip**: You can use the default [values.yaml](charts/kibana/values.yaml)

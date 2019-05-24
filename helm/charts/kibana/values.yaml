@@ -186,7 +186,7 @@ securityContext:
 
 kibanaConfigController:
   image:
-    repository: dockerregistry/kibana-controller
+    repository: dockerregistry/kibana-config-controller
     tag: 1.1.0
   url: http://localhost:5601
   id: "0"
