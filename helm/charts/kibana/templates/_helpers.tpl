@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "kibana-config-controller.name" -}}
+{{- define "kibana.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,13 +11,13 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "kibana-config-controller.fullname" -}}
+{{- define "kibana.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- printf .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
@@ -25,8 +25,8 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Create the name of the service account to use
 */}}
-{{- define "kibana-config-controller.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- define "kibana.serviceAccountName" -}}
+{{ default (include "kibana.fullname" .) .Values.serviceAccount.name }}
 {{- end -}}
