@@ -16,10 +16,10 @@ This chart bootstraps a kibana deployment on a [Kubernetes](http://kubernetes.io
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart with the release name `kibana`:
 
 ```console
-$ helm install . --name my-release
+$ helm install charts/kibana --name kibana
 ```
 
 The command deploys kibana on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -28,10 +28,10 @@ NOTE : We notice that lower resource constraints given to the chart + plugins ar
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release` deployment:
+To uninstall/delete the `kibana` deployment:
 
 ```console
-$ helm delete my-release
+$ helm delete kibana --purge
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -110,14 +110,14 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 * Files not mentioned under this variable will remain unaffected.
 
 ```console
-$ helm install . --name my-release \
+$ helm install charts/kibana --name kibana \
   --set=image.tag=v0.0.2,resources.limits.cpu=200m
 ```
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example :
 
 ```console
-$ helm install . --name my-release -f values.yaml
+$ helm install charts/kibana --name kibana -f values.yaml
 ```
 
 > **Tip**: You can use the default [values.yaml](charts/kibana/values.yaml)
