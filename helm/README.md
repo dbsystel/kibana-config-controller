@@ -97,7 +97,7 @@ The following table lists the configurable parameters of the kibana chart and th
 | `securityContext.runAsUser`                   | User id to run in pods                     | `1000`                                  |
 | `securityContext.fsGroup`                     | fsGroup id to run in pods                  | `2000`                                  |
 | `kibanaConfigController.image.repository`     | Image repository                           | `dockerregistry/kibana-controller` |
-| `kibanaConfigController.image.tag`            | Image tag                                  | `1.0.0`                                 |
+| `kibanaConfigController.image.tag`            | Image tag                                  | `1.1.0`                                 |
 | `kibanaConfigController.url`                  | Kibana url for api calls                   | `http://localhost:5601`                 |
 | `kibanaConfigController.id`                   | id to specify a kibana-config-controller   | `0`                                     |
 | `kibanaConfigController.logLevel`             | log level of kibana-config-controller      | `info`                                  |
