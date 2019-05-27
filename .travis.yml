@@ -17,6 +17,7 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - test -n "$TRAVIS_TAG" && docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - cd ${TRAVIS_BUILD_DIR} # https://github.com/travis-ci/travis-ci/issues/5538#issuecomment-316805662
 
 deploy:
   - provider: script
