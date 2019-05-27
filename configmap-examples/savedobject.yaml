@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: test-index-pattern
+  name: test-saved-objects
   namespace: logging
   annotations:
     kibana.net/savedobject: "true"
@@ -54,6 +54,7 @@ data:
   dashboard.json: |-
     {
       "id": "3e153e90-2a0a-11e9-972a-999a33383a53",
+      "type": "dashboard",
       "attributes": {
         "title": "test_dashboard",
         "hits": 0,
