@@ -1,19 +1,13 @@
-FROM golang:1.12.5-alpine3.9 as builder
+FROM alpine:3.9
 
 RUN apk update \
-    && apk add --no-cache git \
+    && apk add --no-cache curl \
                           ca-certificates \
                           tzdata \
-                          curl \
     && update-ca-certificates
 
-RUN adduser -D -g '' appuser
+RUN addgroup -S kube-operator && adduser -S -g kube-operator kube-operator
+USER kube-operator
 
-FROM scratch
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /usr/bin/curl /usr/bin/curl
 COPY kibana-config-controller /bin/kibana-config-controller
-
-USER appuser
 ENTRYPOINT ["/bin/kibana-config-controller"]
