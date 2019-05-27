@@ -33,8 +33,14 @@ lint:
 .PHONY: lint
 
 # Run all the tests and code checks
-ci: build test lint
+ci: build-ci test lint
 .PHONY: ci
+
+# Build the controller in ci for scratch image
+# Note: output will be the dir root to make it work with travis deploy
+build-ci:
+	GOOS=linux GOARCH=386 go build -v -i -o ./$(BUILD_NAME) ./cmd
+.PHONY: build-ci
 
 # Build the controller
 build:
