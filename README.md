@@ -1,7 +1,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Travis Build Status](https://travis-ci.org/dbsystel/kibana-config-controller/.svg?branch=master)](https://travis-ci.org/dbsystel/kibana-config-controller/)
-[![codecov](https://codecov.io/gh/dbsystel/kibana-config-controller//branch/master/graph/badge.svg)](https://codecov.io/gh/dbsystel/kibana-config-controller/)
-[![golangci](https://golangci.com/badges/github.com/dbsystel/kibana-config-controller/.svg)](https://golangci.com/r/github.com/dbsystel/kibana-config-controller/)
+[![codecov](https://codecov.io/gh/dbsystel/kibana-config-controller/branch/master/graph/badge.svg)](https://codecov.io/gh/dbsystel/kibana-config-controller/)
 [![GoDoc](https://godoc.org/github.com/dbsystel/kibana-config-controller/?status.svg)](http://godoc.org/github.com/dbsystel/kibana-config-controller/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dbsystel/kibana-config-controller/)](https://goreportcard.com/report/github.com/dbsystel/kibana-config-controller/)
 
@@ -44,12 +43,13 @@ Mentioned `"false"` values can be also specified with: `"0", "f", "F", "false", 
 
 ## Development
 ### Build
+```sh
+make build
+# to run the linter, tests and build the binary, run
+make ci
 ```
-go build -v -i -o ./bin/kibana-config-controller ./cmd # on Linux
-GOOS=linux CGO_ENABLED=0 go build -v -i -o ./bin/kibana-config-controller ./cmd # on macOS/Windows
-```
-To build a docker image out of it, look at provided [Dockerfile](Dockerfile) example.
 
+To build a docker image out of it, look at provided [Dockerfile](Dockerfile) example which expects the `kibana-config-controller` binary in the same directory.
 
 ## Deployment
 Our preferred way to install kibana-config-controller is [Helm](https://helm.sh/). See example installation at our [Helm directory](helm) within this repo.
