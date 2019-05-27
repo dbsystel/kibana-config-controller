@@ -8,7 +8,6 @@ services:
   - docker
 
 install:
-  - GOPATH=${TRAVIS_BUILD_DIR}/vendor/go
   - make setup
 
 script:
