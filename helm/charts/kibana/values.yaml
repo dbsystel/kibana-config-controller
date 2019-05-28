@@ -186,8 +186,8 @@ securityContext:
 
 kibanaConfigController:
   image:
-    repository: dockerregistry/kibana-config-controller
-    tag: 1.1.0
+    repository: dbsystel/kibana-config-controller
+    tag: latest
   url: http://localhost:5601
   id: "0"
   logLevel: "info"
