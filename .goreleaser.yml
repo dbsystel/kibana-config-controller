@@ -52,4 +52,4 @@ dockers:
   - image_templates:
       - "dbsystel/kibana-config-controller:latest"
       - "dbsystel/kibana-config-controller:{{ .Tag }}"
-      - "dbsystel/kibana-config-controller:v{{ .Major }}.{{ .Minor }}"
+      - "dbsystel/kibana-config-controller:{{ .Major }}.{{ .Minor }}"
