@@ -14,26 +14,30 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
+// APIClient wrapper for the api client to kibana
 type APIClient struct {
-	BaseUrl    *url.URL
+	BaseURL    *url.URL
 	HTTPClient *http.Client
-	Id         int
+	ID         int
 	logger     log.Logger
 }
 
-type KibanaFindResp struct {
+// FindResp the kibana API response
+type FindResp struct {
 	Total int `json:"total"`
 	Data  []struct {
-		Id string `json:"id"`
+		ID string `json:"id"`
 	} `json:"data"`
 }
 
-func (c *APIClient) CreateObject(objType, objId string, dataJSON io.Reader) error {
-	return c.doPost(makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId), dataJSON)
+// CreateObject creates the given object
+func (c *APIClient) CreateObject(objType, objID string, dataJSON io.Reader) error {
+	return c.doPost(makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID), dataJSON)
 }
 
-func (c *APIClient) UpdateObject(objType, objId string, dataJSON io.Reader) error {
-	url := makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId)
+// UpdateObject updates the given object
+func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) error {
+	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("PUT", url, dataJSON)
 	if err != nil {
 		return err
@@ -44,8 +48,9 @@ func (c *APIClient) UpdateObject(objType, objId string, dataJSON io.Reader) erro
 	return c.doRequest(req)
 }
 
-func (c *APIClient) DeleteObject(objType, objId string) error {
-	url := makeUrl(c.BaseUrl, "api/saved_objects/"+objType+"/"+objId)
+// DeleteObject deletes the object with the given ID
+func (c *APIClient) DeleteObject(objType, objID string) error {
+	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
@@ -71,7 +76,9 @@ func (c *APIClient) doRequest(req *http.Request) error {
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		for strings.Contains(err.Error(), "connection refused") {
+			//nolint:errcheck
 			level.Error(c.logger).Log("err", err.Error())
+			//nolint:errcheck
 			level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry again...")
 			time.Sleep(8 * time.Second)
 			resp, err = c.HTTPClient.Do(req)
@@ -89,7 +96,7 @@ func (c *APIClient) doRequest(req *http.Request) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf(
-			"Unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
+			"unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
 			resp.StatusCode,
 			string(response),
 		)
@@ -97,21 +104,23 @@ func (c *APIClient) doRequest(req *http.Request) error {
 	return nil
 }
 
+// Clientset TODO: needed?
 type Clientset struct {
-	BaseUrl    *url.URL
+	BaseURL    *url.URL
 	HTTPClient *http.Client
 }
 
-func New(baseUrl *url.URL, id int, logger log.Logger) *APIClient {
+// New creates a kibana api client
+func New(baseURL *url.URL, id int, logger log.Logger) *APIClient {
 	return &APIClient{
-		BaseUrl:    baseUrl,
+		BaseURL:    baseURL,
 		HTTPClient: http.DefaultClient,
-		Id:         id,
+		ID:         id,
 		logger:     logger,
 	}
 }
 
-func makeUrl(baseURL *url.URL, endpoint string) string {
+func makeURL(baseURL *url.URL, endpoint string) string {
 	result := *baseURL
 
 	result.Path = path.Join(result.Path, endpoint)

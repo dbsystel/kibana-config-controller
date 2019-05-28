@@ -1,4 +1,4 @@
-package main
+package main // import "github.com/dbsystel/kibana-config-controller"
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ import (
 var (
 	app = kingpin.New(filepath.Base(os.Args[0]), "Kibana Controller")
 	//Here you can define more flags for your application
-	kibanaUrl = app.Flag("kibana-url", "The url to issue requests to update dashboards to.").Required().String()
+	kibanaURL = app.Flag("kibana-url", "The url to issue requests to update dashboards to.").Required().String()
 	id        = app.Flag("id", "The kibana id to issue requests to update dashboards to.").Default("0").Int()
 )
 
@@ -52,21 +52,24 @@ func main() {
 		os.Exit(2)
 	}
 	//First usage of initialized logger for testing
+	// nolint:errcheck
 	level.Debug(logger).Log("msg", "Logging initiated...")
 	//Initialize new k8s client from common k8s package
 	k8sClient, err := kubernetes.NewClientSet(runOutsideCluster)
 	if err != nil {
+		//nolint:errcheck
 		level.Error(logger).Log("msg", err.Error())
 		os.Exit(2)
 	}
 
-	kUrl, err := url.Parse(*kibanaUrl)
+	uRL, err := url.Parse(*kibanaURL)
 	if err != nil {
-		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaUrl)
+		//nolint:errcheck
+		level.Error(logger).Log("msg", "Kibana URL could not be parsed: "+*kibanaURL)
 		os.Exit(2)
 	}
 
-	k := kibana.New(kUrl, *id, logger)
+	k := kibana.New(uRL, *id, logger)
 
 	sigs := make(chan os.Signal, 1) // Create channel to receive OS signals
 	stop := make(chan struct{})     // Create channel to receive stop signal
@@ -84,6 +87,7 @@ func main() {
 
 	<-sigs // Wait for signals (this hangs until a signal arrives)
 
+	//nolint:errcheck
 	level.Info(logger).Log("msg", "Shutting down...")
 
 	close(stop) // Tell goroutines to stop themselves
