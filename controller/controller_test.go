@@ -10,9 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSearchIDFromJSON(t *testing.T) {
-	assert := assert.New(t)
-
+func newTestController(t *testing.T) *Controller {
 	url, _ := url.Parse("https://example.com")
 	logcfg := opslog.Config{LogLevel: "debug", LogFormat: "json"}
 	logger, err := opslog.New(logcfg)
@@ -20,7 +18,13 @@ func TestSearchIDFromJSON(t *testing.T) {
 		t.Errorf("could not create logger: %s", err)
 	}
 	kibanaAPI := kibana.New(url, 1, logger)
-	c := New(*kibanaAPI, logger)
+
+	return New(*kibanaAPI, logger)
+}
+
+func TestSearchIDFromJSON(t *testing.T) {
+	assert := assert.New(t)
+	c := newTestController(t)
 
 	var tests = []struct {
 		input    string
@@ -41,15 +45,7 @@ func TestSearchIDFromJSON(t *testing.T) {
 
 func TestSearchTypeFromJSON(t *testing.T) {
 	assert := assert.New(t)
-
-	url, _ := url.Parse("https://example.com")
-	logcfg := opslog.Config{LogLevel: "debug", LogFormat: "json"}
-	logger, err := opslog.New(logcfg)
-	if err != nil {
-		t.Errorf("could not create logger: %s", err)
-	}
-	kibanaAPI := kibana.New(url, 1, logger)
-	c := New(*kibanaAPI, logger)
+	c := newTestController(t)
 
 	var tests = []struct {
 		input    string
