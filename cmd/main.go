@@ -80,7 +80,7 @@ func main() {
 
 	//Initialize new k8s configmap-controller from common k8s package
 	configMapController := &configmap.ConfigMapController{}
-	configMapController.Controller = controller.New(*k, logger)
+	configMapController.Controller = controller.New(k, logger)
 	configMapController.Initialize(k8sClient)
 	//Run initiated configmap-controller as go routine
 	go configMapController.Run(stop, wg)

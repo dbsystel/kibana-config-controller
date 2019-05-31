@@ -14,20 +14,40 @@ import (
 // Controller wrapper for kibana
 type Controller struct {
 	logger log.Logger
-	k      kibana.APIClient
+	k      kibana.IAPIClient
 }
 
 // Create creates the given configMap
 func (c *Controller) Create(obj interface{}) {
 	configmapObj := obj.(*v1.ConfigMap)
-	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
-	kobj := configmapObj.Annotations["kibana.net/savedobject"] // TODO add error check
 
-	kibanaID, _ := strconv.Atoi(id)
-	isKibanaObject, _ := strconv.ParseBool(kobj)
+	id := configmapObj.Annotations["kibana.net/id"]
+	kobj := configmapObj.Annotations["kibana.net/savedobject"]
 
-	if kibanaID == c.k.ID && isKibanaObject {
-		var err error
+	var err error
+	kibanaID, err := strconv.Atoi(id)
+	if err != nil {
+		//nolint:errcheck
+		level.Info(c.logger).Log(
+			"msg", "Kibana ID is not an int: "+id,
+			"configmap", configmapObj.Name,
+			"namespace", configmapObj.Namespace,
+		)
+		return
+	}
+
+	isKibanaObject, err := strconv.ParseBool(kobj)
+	if err != nil {
+		//nolint:errcheck
+		level.Info(c.logger).Log(
+			"msg", "Kibana savedObject is not a bool: "+kobj,
+			"configmap", configmapObj.Name,
+			"namespace", configmapObj.Namespace,
+		)
+		return
+	}
+
+	if kibanaID == c.k.GetID() && isKibanaObject {
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
 			if objType == "" {
@@ -63,19 +83,20 @@ func (c *Controller) Create(obj interface{}) {
 				)
 				//nolint:errcheck
 				level.Error(c.logger).Log("err", err.Error())
-			} else {
-				//nolint:errcheck
-				level.Info(c.logger).Log(
-					"msg", "Succeeded: Created: "+k,
-					"configmap", configmapObj.Name,
-					"namespace", configmapObj.Namespace,
-				)
+				return
 			}
+
+			//nolint:errcheck
+			level.Info(c.logger).Log(
+				"msg", "Succeeded: Created: "+k,
+				"configmap", configmapObj.Name,
+				"namespace", configmapObj.Namespace,
+			)
 		}
-	} else {
-		//nolint:errcheck
-		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
+
+	//nolint:errcheck
+	level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 }
 
 // Update updates the given configMap
@@ -93,7 +114,7 @@ func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 		return
 	}
 
-	if kibanaID == c.k.ID && isKibanaObject {
+	if kibanaID == c.k.GetID() && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
@@ -153,7 +174,7 @@ func (c *Controller) Delete(obj interface{}) {
 	kibanaID, _ := strconv.Atoi(id)
 	isKibanaObject, _ := strconv.ParseBool(kobj)
 
-	if kibanaID == c.k.ID && isKibanaObject {
+	if kibanaID == c.k.GetID() && isKibanaObject {
 		var err error
 		for k, v := range configmapObj.Data {
 			objType := c.searchTypeFromJSON(strings.NewReader(v))
@@ -268,7 +289,7 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 }
 
 // New creates new Controller instance
-func New(k kibana.APIClient, logger log.Logger) *Controller {
+func New(k kibana.IAPIClient, logger log.Logger) *Controller {
 	controller := &Controller{}
 	controller.logger = logger
 	controller.k = k

@@ -14,11 +14,19 @@ import (
 	"github.com/go-kit/kit/log/level"
 )
 
+// IAPIClient defines the interface for the kibana client
+type IAPIClient interface {
+	CreateObject(objType, objID string, dataJSON io.Reader) error
+	UpdateObject(objType, objID string, dataJSON io.Reader) error
+	DeleteObject(objType, objID string) error
+	GetID() int
+}
+
 // APIClient wrapper for the api client to kibana
 type APIClient struct {
-	BaseURL    *url.URL
-	HTTPClient *http.Client
-	ID         int
+	baseURL    *url.URL
+	httpClient *http.Client
+	id         int
 	logger     log.Logger
 }
 
@@ -32,12 +40,12 @@ type FindResp struct {
 
 // CreateObject creates the given object
 func (c *APIClient) CreateObject(objType, objID string, dataJSON io.Reader) error {
-	return c.doPost(makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID), dataJSON)
+	return c.doPost(makeURL(c.baseURL, "api/saved_objects/"+objType+"/"+objID), dataJSON)
 }
 
 // UpdateObject updates the given object
 func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) error {
-	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
+	url := makeURL(c.baseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("PUT", url, dataJSON)
 	if err != nil {
 		return err
@@ -50,7 +58,7 @@ func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) erro
 
 // DeleteObject deletes the object with the given ID
 func (c *APIClient) DeleteObject(objType, objID string) error {
-	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
+	url := makeURL(c.baseURL, "api/saved_objects/"+objType+"/"+objID)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
@@ -73,7 +81,7 @@ func (c *APIClient) doPost(url string, dataJSON io.Reader) error {
 }
 
 func (c *APIClient) doRequest(req *http.Request) error {
-	resp, err := c.HTTPClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		for strings.Contains(err.Error(), "connection refused") {
 			//nolint:errcheck
@@ -81,7 +89,7 @@ func (c *APIClient) doRequest(req *http.Request) error {
 			//nolint:errcheck
 			level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry again...")
 			time.Sleep(8 * time.Second)
-			resp, err = c.HTTPClient.Do(req)
+			resp, err = c.httpClient.Do(req)
 			if err == nil {
 				break
 			}
@@ -104,18 +112,17 @@ func (c *APIClient) doRequest(req *http.Request) error {
 	return nil
 }
 
-// Clientset TODO: needed?
-type Clientset struct {
-	BaseURL    *url.URL
-	HTTPClient *http.Client
+// GetID return the id of the kibana client
+func (c *APIClient) GetID() int {
+	return c.id
 }
 
 // New creates a kibana api client
 func New(baseURL *url.URL, id int, logger log.Logger) *APIClient {
 	return &APIClient{
-		BaseURL:    baseURL,
-		HTTPClient: http.DefaultClient,
-		ID:         id,
+		baseURL:    baseURL,
+		httpClient: http.DefaultClient,
+		id:         id,
 		logger:     logger,
 	}
 }
