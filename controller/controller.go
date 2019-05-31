@@ -275,7 +275,7 @@ func New(k kibana.APIClient, logger log.Logger) *Controller {
 	return controller
 }
 
-// noDifference checks if two configmaps are equals
+// noDifference checks if two configmaps are equal
 func noDifference(newConfigMap *v1.ConfigMap, oldConfigMap *v1.ConfigMap) bool {
 	if len(newConfigMap.Data) != len(oldConfigMap.Data) {
 		return false
