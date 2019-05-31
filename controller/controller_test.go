@@ -201,6 +201,38 @@ func TestCreateObject(t *testing.T) {
 			false,
 		},
 		{
+			"type and id set in config map data but ids do not match",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "5",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "5", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"type and id set in config map data but is not a saved object",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "false",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
 			"type and id set in config map data",
 			&v1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
