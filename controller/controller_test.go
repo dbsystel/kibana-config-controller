@@ -38,3 +38,32 @@ func TestSearchIDFromJSON(t *testing.T) {
 		assert.Equal(c.searchIDFromJSON(json), test.expected)
 	}
 }
+
+func TestSearchTypeFromJSON(t *testing.T) {
+	assert := assert.New(t)
+
+	url, _ := url.Parse("https://example.com")
+	logcfg := opslog.Config{LogLevel: "debug", LogFormat: "json"}
+	logger, err := opslog.New(logcfg)
+	if err != nil {
+		t.Errorf("could not create logger: %s", err)
+	}
+	kibanaAPI := kibana.New(url, 1, logger)
+	c := New(*kibanaAPI, logger)
+
+	var tests = []struct {
+		input    string
+		expected string
+	}{
+		{`{"type": "abc"}`, "abc"},
+		{`{"other": "value","type": "abc"}`, "abc"},
+		{`{"other": "value","_type": "abcd"}`, "abcd"},
+		{`{"other": "value","foo": "bar"}`, ""},
+		{`invalid json`, ""},
+	}
+
+	for _, test := range tests {
+		json := strings.NewReader(test.input)
+		assert.Equal(c.searchTypeFromJSON(json), test.expected)
+	}
+}
