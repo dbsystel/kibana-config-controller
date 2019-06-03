@@ -29,7 +29,7 @@ fmt:
 
 # Run all the linters
 lint:
-	./bin/golangci-lint run --tests=false --enable-all --disable=gochecknoglobals,dupl,interfacer ./...
+	./bin/golangci-lint run --tests=false --enable-all --disable=gochecknoglobals,dupl ./...
 .PHONY: lint
 
 # Run all the tests and code checks

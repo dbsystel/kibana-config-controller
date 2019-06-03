@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"io"
 	"strconv"
 	"strings"
 
@@ -264,7 +265,7 @@ func (c *Controller) Delete(obj interface{}) {
 }
 
 // searchTypeFromJSON extracts the 'id' propery from the given object
-func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
+func (c *Controller) searchIDFromJSON(objJSON io.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
@@ -281,7 +282,7 @@ func (c *Controller) searchIDFromJSON(objJSON *strings.Reader) string {
 }
 
 // searchTypeFromJSON extracts the 'type' propery from the given object
-func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
+func (c *Controller) searchTypeFromJSON(objJSON io.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
@@ -298,7 +299,7 @@ func (c *Controller) searchTypeFromJSON(objJSON *strings.Reader) string {
 }
 
 // deleteNotAllowedFields deletes the fields which are not allowed for kibana api in json body
-func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
+func (c *Controller) deleteNotAllowedFields(objJSON io.Reader) string {
 	newObj := make(map[string]interface{})
 	err := json.NewDecoder(objJSON).Decode(&newObj)
 	if err != nil {
