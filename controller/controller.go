@@ -102,11 +102,31 @@ func (c *Controller) Create(obj interface{}) {
 // Update updates the given configMap
 func (c *Controller) Update(oldobj interface{}, newobj interface{}) {
 	configmapObj := newobj.(*v1.ConfigMap)
-	id := configmapObj.Annotations["kibana.net/id"]            // TODO add error check
-	kobj := configmapObj.Annotations["kibana.net/savedobject"] // TODO add error check
+	id := configmapObj.Annotations["kibana.net/id"]
+	kobj := configmapObj.Annotations["kibana.net/savedobject"]
 
-	kibanaID, _ := strconv.Atoi(id)
-	isKibanaObject, _ := strconv.ParseBool(kobj)
+	var err error
+	kibanaID, err := strconv.Atoi(id)
+	if err != nil {
+		//nolint:errcheck
+		level.Info(c.logger).Log(
+			"msg", "Kibana ID is not an int: "+id,
+			"configmap", configmapObj.Name,
+			"namespace", configmapObj.Namespace,
+		)
+		return
+	}
+
+	isKibanaObject, err := strconv.ParseBool(kobj)
+	if err != nil {
+		//nolint:errcheck
+		level.Info(c.logger).Log(
+			"msg", "Kibana savedObject is not a bool: "+kobj,
+			"configmap", configmapObj.Name,
+			"namespace", configmapObj.Namespace,
+		)
+		return
+	}
 
 	if noDifference(oldobj.(*v1.ConfigMap), configmapObj) {
 		//nolint:errcheck

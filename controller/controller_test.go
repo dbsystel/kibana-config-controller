@@ -27,6 +27,8 @@ func (c *kibanaAPIClientMock) CreateObject(objType, objID string, dataJSON io.Re
 	return nil
 }
 func (c *kibanaAPIClientMock) UpdateObject(objType, objID string, dataJSON io.Reader) error {
+	args := c.Called(objType, objID, dataJSON)
+	fmt.Printf("## args: %v", args)
 	return nil
 }
 func (c *kibanaAPIClientMock) DeleteObject(objType, objID string) error {
@@ -260,6 +262,173 @@ func TestCreateObject(t *testing.T) {
 
 		if test.stubCalled {
 			kibanaAPI.AssertCalled(t, "CreateObject", "abc-type", "1", strings.NewReader(test.dataJSON))
+		} else {
+			kibanaAPI.AssertNotCalled(t, "CreateObject")
+		}
+	}
+}
+
+func TestUpdateObject(t *testing.T) {
+	kibanaAPI := new(kibanaAPIClientMock)
+	c := newTestController(t, kibanaAPI)
+
+	assert := assert.New(t)
+
+	var tests = []struct {
+		description  string
+		oldConfigMap *v1.ConfigMap
+		newConfigMap *v1.ConfigMap
+		dataJSON     string
+		stubCalled   bool
+	}{
+		{
+			"invalid kibana id",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Annotations: map[string]string{"kibana.net/id": "abc"}}},
+			"",
+			false,
+		},
+		{
+			"invalid kibana saved object",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Annotations: map[string]string{"kibana.net/id": "1", "kibana.net/savedobject": "no a bool"}}},
+			"",
+			false,
+		},
+		{
+			"no type set in config map data",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"other": "value","foo": "bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"type set but no id in config map data",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","foo": "bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"type and id set in config map data but ids do not match",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "5",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "5", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"type and id set in config map data but is not a saved object",
+			&v1.ConfigMap{},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "false",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"no changes in new config map data",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+		},
+		{
+			"type and id set in config map data",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type-updated","id": "1", "foo":"bar"}`,
+				},
+			},
+			`{"foo":"bar"}`,
+			true,
+		},
+	}
+
+	for _, test := range tests {
+		if test.stubCalled {
+			kibanaAPI.On("UpdateObject", "abc-type-updated", "1", strings.NewReader(test.dataJSON)).Return()
+		}
+
+		c.Update(test.oldConfigMap, test.newConfigMap)
+		assert.Equal(true, true)
+
+		if test.stubCalled {
+			kibanaAPI.AssertCalled(t, "UpdateObject", "abc-type-updated", "1", strings.NewReader(test.dataJSON))
 		} else {
 			kibanaAPI.AssertNotCalled(t, "CreateObject")
 		}
