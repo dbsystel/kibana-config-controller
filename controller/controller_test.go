@@ -35,6 +35,9 @@ func (c *kibanaAPIClientMock) UpdateObject(objType, objID string, dataJSON io.Re
 func (c *kibanaAPIClientMock) DeleteObject(objType, objID string) error {
 	args := c.Called(objType, objID)
 	fmt.Printf("## args: %v", args)
+	if objType == "throw-error" {
+		return errors.New("throw-err")
+	}
 	return nil
 }
 func (c *kibanaAPIClientMock) doPost(url string, dataJSON io.Reader) error {
@@ -560,7 +563,7 @@ func TestDeleteObject(t *testing.T) {
 					},
 				},
 				Data: map[string]string{
-					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+					"bla": `{"type": "throw-error","id": "1", "foo":"bar"}`,
 				},
 			},
 			`{"foo":"bar"}`,
@@ -572,7 +575,7 @@ func TestDeleteObject(t *testing.T) {
 	for _, test := range tests {
 		if test.stubCalled {
 			if test.stubCalledWithError {
-				kibanaAPI.On("DeleteObject", "abc-type", "1").Return(errors.New("call failed"))
+				kibanaAPI.On("DeleteObject", "throw-error", "1").Return()
 			} else {
 				kibanaAPI.On("DeleteObject", "abc-type", "1").Return()
 			}
@@ -582,7 +585,11 @@ func TestDeleteObject(t *testing.T) {
 		assert.Equal(true, true)
 
 		if test.stubCalled {
-			kibanaAPI.AssertCalled(t, "DeleteObject", "abc-type", "1")
+			if test.stubCalledWithError {
+				kibanaAPI.AssertCalled(t, "DeleteObject", "throw-error", "1")
+			} else {
+				kibanaAPI.AssertCalled(t, "DeleteObject", "abc-type", "1")
+			}
 		} else {
 			kibanaAPI.AssertNotCalled(t, "DeleteObject")
 		}
