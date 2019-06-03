@@ -83,20 +83,20 @@ func (c *Controller) Create(obj interface{}) {
 				)
 				//nolint:errcheck
 				level.Error(c.logger).Log("err", err.Error())
-				return
+
+			} else {
+				//nolint:errcheck
+				level.Info(c.logger).Log(
+					"msg", "Succeeded: Created: "+k,
+					"configmap", configmapObj.Name,
+					"namespace", configmapObj.Namespace,
+				)
 			}
-
-			//nolint:errcheck
-			level.Info(c.logger).Log(
-				"msg", "Succeeded: Created: "+k,
-				"configmap", configmapObj.Name,
-				"namespace", configmapObj.Namespace,
-			)
 		}
+	} else {
+		//nolint:errcheck
+		level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 	}
-
-	//nolint:errcheck
-	level.Debug(c.logger).Log("msg", "Skipping configmap: "+configmapObj.Name)
 }
 
 // Update updates the given configMap
