@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -32,6 +33,8 @@ func (c *kibanaAPIClientMock) UpdateObject(objType, objID string, dataJSON io.Re
 	return nil
 }
 func (c *kibanaAPIClientMock) DeleteObject(objType, objID string) error {
+	args := c.Called(objType, objID)
+	fmt.Printf("## args: %v", args)
 	return nil
 }
 func (c *kibanaAPIClientMock) doPost(url string, dataJSON io.Reader) error {
@@ -430,7 +433,158 @@ func TestUpdateObject(t *testing.T) {
 		if test.stubCalled {
 			kibanaAPI.AssertCalled(t, "UpdateObject", "abc-type-updated", "1", strings.NewReader(test.dataJSON))
 		} else {
-			kibanaAPI.AssertNotCalled(t, "CreateObject")
+			kibanaAPI.AssertNotCalled(t, "UpdateObject")
+		}
+	}
+}
+
+func TestDeleteObject(t *testing.T) {
+	kibanaAPI := new(kibanaAPIClientMock)
+	c := newTestController(t, kibanaAPI)
+
+	assert := assert.New(t)
+
+	var tests = []struct {
+		description         string
+		configMap           *v1.ConfigMap
+		dataJSON            string
+		stubCalled          bool
+		stubCalledWithError bool
+	}{
+		{
+			"invalid kibana id",
+			&v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Annotations: map[string]string{"kibana.net/id": "abc"}}},
+			"",
+			false,
+			false,
+		},
+		{
+			"invalid kibana saved object",
+			&v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Annotations: map[string]string{"kibana.net/id": "1", "kibana.net/savedobject": "no a bool"}}},
+			"",
+			false,
+			false,
+		},
+		{
+			"no type set in config map data",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"other": "value","foo": "bar"}`,
+				},
+			},
+			"",
+			false,
+			false,
+		},
+		{
+			"type set but no id in config map data",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","foo": "bar"}`,
+				},
+			},
+			"",
+			false,
+			false,
+		},
+		{
+			"type and id set in config map data but ids do not match",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "5",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "5", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+			false,
+		},
+		{
+			"type and id set in config map data but is not a saved object",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "false",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			"",
+			false,
+			false,
+		},
+		{
+			"type and id set in config map data",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			`{"foo":"bar"}`,
+			true,
+			false,
+		},
+		{
+			"type and id set in config map data but stub call errors",
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						"kibana.net/id":          "1",
+						"kibana.net/savedobject": "true",
+					},
+				},
+				Data: map[string]string{
+					"bla": `{"type": "abc-type","id": "1", "foo":"bar"}`,
+				},
+			},
+			`{"foo":"bar"}`,
+			true,
+			true,
+		},
+	}
+
+	for _, test := range tests {
+		if test.stubCalled {
+			if test.stubCalledWithError {
+				kibanaAPI.On("DeleteObject", "abc-type", "1").Return(errors.New("call failed"))
+			} else {
+				kibanaAPI.On("DeleteObject", "abc-type", "1").Return()
+			}
+		}
+
+		c.Delete(test.configMap)
+		assert.Equal(true, true)
+
+		if test.stubCalled {
+			kibanaAPI.AssertCalled(t, "DeleteObject", "abc-type", "1")
+		} else {
+			kibanaAPI.AssertNotCalled(t, "DeleteObject")
 		}
 	}
 }
