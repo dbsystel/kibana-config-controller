@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-saved-objects
+  namespace: logging
+  annotations:
+    kibana.net/savedobject: "true"
+    kibana.net/id: "0"
+
+data:
+  search.json: |-
+    {
+      "_id": "138e6750-2a0a-11e9-972a-999a33383a53",
+      "_type": "search",
+      "_source": {
+        "title": "test_search",
+        "description": "",
+        "hits": 0,
+        "columns": [
+          "_source"
+        ],
+        "sort": [
+          "@timestamp-es",
+          "desc"
+        ],
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"index\":\"a7b63cc0-f24a-11e8-972a-999a33383a53\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"test\"},\"filter\":[]}"
+        }
+      },
+      "_meta": {
+        "savedObjectVersion": 2
+      }
+    }
+  visualization.json: |-
+    {
+      "_id": "26d78990-2a0a-11e9-972a-999a33383a53",
+      "_type": "visualization",
+      "_source": {
+        "title": "test_visualization",
+        "visState": "{\"title\":\"test_visualization\",\"type\":\"metric\",\"params\":{\"addTooltip\":true,\"addLegend\":false,\"type\":\"metric\",\"metric\":{\"percentageMode\":false,\"useRanges\":false,\"colorSchema\":\"Green to Red\",\"metricColorMode\":\"None\",\"colorsRange\":[{\"from\":0,\"to\":10000}],\"labels\":{\"show\":true},\"invertColors\":false,\"style\":{\"bgFill\":\"#000\",\"bgColor\":false,\"labelColor\":false,\"subText\":\"\",\"fontSize\":60}}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}}]}",
+        "uiStateJSON": "{}",
+        "description": "",
+        "savedSearchId": "138e6750-2a0a-11e9-972a-999a33383a53",
+        "version": 1,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+        }
+      },
+      "_meta": {
+        "savedObjectVersion": 2
+      }
+    }
+  dashboard.json: |-
+    {
+      "id": "3e153e90-2a0a-11e9-972a-999a33383a53",
+      "type": "dashboard",
+      "attributes": {
+        "title": "test_dashboard",
+        "hits": 0,
+        "description": "",
+        "panelsJSON": "[{\"gridData\":{\"w\":24,\"h\":15,\"x\":0,\"y\":0,\"i\":\"1\"},\"version\":\"6.4.2\",\"panelIndex\":\"1\",\"type\":\"visualization\",\"id\":\"26d78990-2a0a-11e9-972a-999a33383a53\",\"embeddableConfig\":{}}]",
+        "optionsJSON": "{\"darkTheme\":false,\"useMargins\":true,\"hidePanelTitles\":false}",
+        "version": 1,
+        "timeRestore": false,
+        "kibanaSavedObjectMeta": {
+          "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[]}"
+        }
+      }
+    }
