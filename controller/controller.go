@@ -245,22 +245,15 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 		level.Error(c.logger).Log("err", err.Error())
 	}
 
-	delete(newObj, "_id")
-	delete(newObj, "id")
-	delete(newObj, "_type")
-	delete(newObj, "type")
-	delete(newObj, "_meta")
-	delete(newObj, "meta")
-	delete(newObj, "migrationVersion")
+	objRequestBody := make(map[string]interface{})
+
 	if newObj["_source"] != nil {
-		newObj["attributes"] = newObj["_source"]
-		delete(newObj, "_source")
+		objRequestBody["attributes"] = newObj["_source"]
 	} else if newObj["source"] != nil {
-		newObj["attributes"] = newObj["source"]
-		delete(newObj, "source")
+		objRequestBody["attributes"] = newObj["source"]
 	}
 
-	jsonString, err := json.Marshal(newObj)
+	jsonString, err := json.Marshal(objRequestBody)
 	if err != nil {
 		//nolint:errcheck
 		level.Error(c.logger).Log("err", err.Error())
