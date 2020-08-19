@@ -251,6 +251,7 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 	delete(newObj, "type")
 	delete(newObj, "_meta")
 	delete(newObj, "meta")
+	delete(newObj, "migrationVersion")
 	if newObj["_source"] != nil {
 		newObj["attributes"] = newObj["_source"]
 		delete(newObj, "_source")
