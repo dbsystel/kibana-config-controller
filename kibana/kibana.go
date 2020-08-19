@@ -69,23 +69,33 @@ func (c *APIClient) doPost(url string, dataJSON io.Reader) error {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("kbn-xsrf", "true")
 
-	return c.doRequest(req)
+	err = c.doRequest(req)
+
+	for err != nil && strings.Contains(err.Error(), "Kibana server is not ready yet") {
+		level.Error(c.logger).Log("err", err.Error())
+		req, err = http.NewRequest("POST", url, dataJSON)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("kbn-xsrf", "true")
+
+		level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry...")
+		time.Sleep(8 * time.Second)
+
+		err = c.doRequest(req)
+	}
+
+	return err
 }
 
 func (c *APIClient) doRequest(req *http.Request) error {
 	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		for strings.Contains(err.Error(), "connection refused") {
-			//nolint:errcheck
-			level.Error(c.logger).Log("err", err.Error())
-			//nolint:errcheck
-			level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry again...")
-			time.Sleep(8 * time.Second)
-			resp, err = c.HTTPClient.Do(req)
-			if err == nil {
-				break
-			}
-		}
+	for err != nil && strings.Contains(err.Error(), "connection refused") {
+		level.Error(c.logger).Log("err", err.Error())
+		level.Info(c.logger).Log("msg", "Perhaps Kibana is not ready. Waiting for 8 seconds and retry...")
+		time.Sleep(8 * time.Second)
+		resp, err = c.HTTPClient.Do(req)
 	}
 	if err != nil {
 		return err
@@ -96,7 +106,7 @@ func (c *APIClient) doRequest(req *http.Request) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf(
-			"unexpected status code returned from Kibana API (got: %d, expected: 200, msg:%s)",
+			"Unexpected status code returned from Kibana API (got: %d, expected: 200, msg: %s)",
 			resp.StatusCode,
 			string(response),
 		)
