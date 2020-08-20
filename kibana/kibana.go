@@ -37,15 +37,7 @@ func (c *APIClient) CreateObject(objType, objID string, dataJSON io.Reader) erro
 
 // UpdateObject updates the given object
 func (c *APIClient) UpdateObject(objType, objID string, dataJSON io.Reader) error {
-	url := makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID)
-	req, err := http.NewRequest("PUT", url, dataJSON)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("kbn-xsrf", "true")
-
-	return c.doRequest(req)
+	return c.doPost(makeURL(c.BaseURL, "api/saved_objects/"+objType+"/"+objID), dataJSON)
 }
 
 // DeleteObject deletes the object with the given ID
@@ -68,6 +60,10 @@ func (c *APIClient) doPost(url string, dataJSON io.Reader) error {
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("kbn-xsrf", "true")
+
+	query := req.URL.Query()
+	query.Add("overwrite", "true")
+	req.URL.RawQuery = query.Encode()
 
 	err = c.doRequest(req)
 

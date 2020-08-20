@@ -251,6 +251,8 @@ func (c *Controller) deleteNotAllowedFields(objJSON *strings.Reader) string {
 		objRequestBody["attributes"] = newObj["_source"]
 	} else if newObj["source"] != nil {
 		objRequestBody["attributes"] = newObj["source"]
+	} else if newObj["attributes"] != nil {
+		objRequestBody["attributes"] = newObj["attributes"]
 	}
 
 	jsonString, err := json.Marshal(objRequestBody)

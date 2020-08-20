@@ -25,6 +25,7 @@ var (
 	//Here you can define more flags for your application
 	kibanaURL = app.Flag("kibana-url", "The url to issue requests to update dashboards to.").Required().String()
 	id        = app.Flag("id", "The kibana id to issue requests to update dashboards to.").Default("0").Int()
+	namespace = app.Flag("namespace", "The namespace to watching.").Default("").String()
 )
 
 func main() {
@@ -81,7 +82,7 @@ func main() {
 	//Initialize new k8s configmap-controller from common k8s package
 	configMapController := &configmap.ConfigMapController{}
 	configMapController.Controller = controller.New(*k, logger)
-	configMapController.Initialize(k8sClient)
+	configMapController.Initialize(k8sClient, *namespace)
 	//Run initiated configmap-controller as go routine
 	go configMapController.Run(stop, wg)
 
